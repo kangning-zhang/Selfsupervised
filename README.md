@@ -9,6 +9,11 @@ The core of the self-supervised method lies a framing called "pretext task" that
 
 <img width="400" alt="1" src="https://user-images.githubusercontent.com/57115537/86545046-a9b20c00-bf23-11ea-98b8-e2d82959d500.png">
 
+### Common Setup (Pre-training, Feature Extraction and Transfer):
+
+1. Firstly, perform self-supervised pre-training using a self-supervised pretext method on a pre-training dataset
+2. Secondly, extract features from various layers of the network. Say for AlexNet, we do this after every conv layer
+3. Finally, evaluate quality of these features (from different self-supervised approaches) by transfer learning
 
 
 ## Image-Based
