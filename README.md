@@ -44,19 +44,24 @@ The figure below illustrates how a puzzle is generated and solved.
 ### Exemplar networks
 Perturb/distort image patches, e.g. by cropping and affine transformations and train to classify these exemplars as same class. In this case, every individual image corresponds to its own class, multiple examples are aumentated and triplet loss is used in order to scale this pretext task to a large number of images and classes. Triplet loss is choicen here to encourage examples of the same image to have representations that are close in Euclidean space.
 
-<img width="400" alt="Screenshot 2020-07-06 at 10 33 23 AM" src="https://user-images.githubusercontent.com/57115537/86578752-371d4c80-bf74-11ea-8d17-fdd4507bab15.png">
+<img width="300" alt="Screenshot 2020-07-06 at 10 33 23 AM" src="https://user-images.githubusercontent.com/57115537/86578752-371d4c80-bf74-11ea-8d17-fdd4507bab15.png">
 
 
-### Rotation - with applications to video
+### Rotation - with applications to video (see in next section)
+
+Gidaris et al. proposed to produce 4 copies of original image by rotating it by {0,90,180,270} degree and the model is trained to predict which ratation is appied, which is a four class classification job. In tuitatively, in order to identify the same image with different rotations, a good model should learn to recognize canonical orientations of objects in natural image, the level object parts, such as heads, noses, and eyes, and the relative positions of these parts, rather than local patterns. This pretext task drives the model to learn semantic concepts of objects in this way.
+
+
+<img width="600" alt="Screenshot 2020-07-06 at 11 33 50 AM" src="https://user-images.githubusercontent.com/57115537/86600277-c12adc80-bf97-11ea-9414-cb1e0a61c548.png">
 
 
 ### Colourization (could not be transferred to medical image)
 Train network to predict pixel colour from a monochrome input
 
-<img width="500" alt="Screenshot 2020-07-06 at 10 33 15 AM" src="https://user-images.githubusercontent.com/57115537/86578729-2ff63e80-bf74-11ea-8d38-83b1e6072a72.png">
+<img width="300" alt="Screenshot 2020-07-06 at 10 33 15 AM" src="https://user-images.githubusercontent.com/57115537/86578729-2ff63e80-bf74-11ea-8d38-83b1e6072a72.png">
 
 
-## Video-Based
+## Video-Based (A temporal sequence of frames)
 Since we are going to work on vedio instead of image, here is some applications on this area.
 
 ### Unsupervised Learning of Video Representations using LSTMs
