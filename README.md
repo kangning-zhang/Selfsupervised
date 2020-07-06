@@ -3,14 +3,13 @@ Current deep learning models benefit greatly from supervised training, especiall
 
 --------------------------------------------------
 
-
 ## General Pipeline
 
-The core of the self-supervised method lies a framing called "pretext task" that is pre-degisned to solve for leaning visual representations by leaning the objective function of the "pretext task". And the representations learned by performing this task can be used as a starting point for our downstream supervised tasks.
+The core of the self-supervised method lies a framing called "pretext task" that is pre-degisned to solve for leaning visual representations by leaning the objective function of the "pretext task". And the representations learned by performing this task can be used as a starting point for our downstream supervised tasks. In some sense, we don't quite care about the final performance of this artifacial task, but what is really interested is the intermediate representation it learned that are expected to carry good semantic or structural meanings. If the learning model can learn representative semantic features, then it can be served as a good start point and leads to better performance on these high-level visual tasks.
 
-<img width="510" alt="1" src="https://user-images.githubusercontent.com/57115537/86545046-a9b20c00-bf23-11ea-98b8-e2d82959d500.png">
+<img width="300" alt="1" src="https://user-images.githubusercontent.com/57115537/86545046-a9b20c00-bf23-11ea-98b8-e2d82959d500.png">
 
-The self-supervised task, also known as pretext task, guides us to a supervised loss function. However, we usually don’t care about the final performance of this invented task. Rather we are interested in the learned intermediate representation with the expectation that this representation can carry good semantic or structural meanings and can be beneficial to a variety of practical downstream tasks.
+
 
 
 # Literature Review
