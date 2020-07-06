@@ -51,7 +51,7 @@ Perturb/distort image patches, e.g. by cropping and affine transformations and t
 
 Gidaris et al. proposed to produce 4 copies of original image by rotating it by {0,90,180,270} degree and the model is trained to predict which ratation is appied, which is a four class classification job. In tuitatively, in order to identify the same image with different rotations, a good model should learn to recognize canonical orientations of objects in natural image, the level object parts, such as heads, noses, and eyes, and the relative positions of these parts, rather than local patterns. This pretext task drives the model to learn semantic concepts of objects in this way.
 
-
+The RotNet used in the paper:
 <img width="600" alt="Screenshot 2020-07-06 at 11 33 50 AM" src="https://user-images.githubusercontent.com/57115537/86600277-c12adc80-bf97-11ea-9414-cb1e0a61c548.png">
 
 
@@ -64,21 +64,68 @@ Train network to predict pixel colour from a monochrome input
 ## Video-Based (A temporal sequence of frames)
 Since we are going to work on vedio instead of image, here is some applications on this area.
 
-### Unsupervised Learning of Video Representations using LSTMs
+### Self-supervised Spatiotemporal Feature Learning by Video Geometric Transformations (Rotation)
+
+In the paper, they propose 3DRotNet: a fully self-supervised approach to learn spatiotemporal features from unlabeled videos. A set of rotations are applied to all videos, and a pretext task is defined as prediction of these rotations. When accomplishing this task, 3DRotNet is actually trained to understand the semantic concepts and motions in videos. In other words, it learns a spatiotemporal video representation, which can be transferred to improve video understanding tasks in small datasets. They test the effectiveness of the 3DRotNet on action recognition task
+
+<img width="600" alt="Screenshot 2020-07-06 at 2 52 48 PM" src="https://user-images.githubusercontent.com/57115537/86603117-81fe8a80-bf9b-11ea-9079-b701440c3690.png">
+
+### Shuffle and Learn: Unsupervised Learning using Temporal Order Verification (Shuffle and Learn)
+
+In this paper, they define the pretext task as determining whether a sequence of frams from the video is in the correct trmporal order. In some sense could be understand as given the starting and the end, could a certaion point in the middle? Such a simple sequential verification task captures important spatiotemporal signals in videos, hence are used to learn powerful visual representation.
+
+<img width="400" alt="Screenshot 2020-07-06 at 3 09 16 PM" src="https://user-images.githubusercontent.com/57115537/86602785-14525e80-bf9b-11ea-8f66-48ac311c5a6f.png">
+
+<img width="600" alt="Screenshot 2020-07-06 at 3 10 55 PM" src="https://user-images.githubusercontent.com/57115537/86602794-187e7c00-bf9b-11ea-87b6-e980e74fc0ab.png">
+
+The representation in fc7 contains complementary information and are transferred for action reconition and human pose reconition.
+
+### Self-Supervised Video Representation Learning with Space-Time Cubic Puzzles (3DCubicPuzzle)
+
+A new self-supervised task called as Space-Time Cubic Puzzles is introduced to train 3D CNNs using large scale video dataset. Given a randomly permuted sequence of 3D spatio-temporal pieces cropped from a video clip, the network is trained to predict their original arrangement.
+
+(How to generate puzzle pieces: consider a spatio-temporal cuboid consisting of 2 × 2 × 4 grid cells for each video, hence there are 16! possible permutations. To avoid ambiguity of similar permutation, sample 4 crops instead of 16, in either spatial or temporal direction. More specifically, the 3D crops are extracted from a 4-cell grid of shape 2×2×1 (colored in blue) or 1 × 1 × 4 (colored in red) along the spatial or temporal dimension respectively. Finally, randomly permute them to make the input. The network must feed the 4 input crops through several convolutional layers, and produce an output probability to each of the possible permutations that might have been sampled.)
+
+Space-time cuboid:
+<img width="200" alt="Screenshot 2020-07-06 at 3 27 33 PM" src="https://user-images.githubusercontent.com/57115537/86606834-6b0e6700-bfa0-11ea-88e9-dd7d1f9db735.png">
+
+Example spatial and temporal tuples.:
+<img width="600" alt="Screenshot 2020-07-06 at 3 46 49 PM" src="https://user-images.githubusercontent.com/57115537/86606858-72ce0b80-bfa0-11ea-8240-ca73df969bf1.png">
+
+Architecture:
+<img width="400" alt="Screenshot 2020-07-06 at 3 27 51 PM" src="https://user-images.githubusercontent.com/57115537/86606848-6fd31b00-bfa0-11ea-97fb-bb3370970ec8.png">
+
+The following analysis are done to demonstrate the effectiveness of the methods:
+1) comparison with the random initialization and Kinetics-pretraining (supervised), 2) comparison with our alternative strategies, 3) ablation analysis, 4) comparison with the state-of-the-art methods, and 5) Visualization of the low-level filters and high-level activations.
+
+### Generating Videos with Scene Dynamics
+
+They propose to use generative adversarial networks for video with a spatio-temporal convolutional architecture that untangles the scene’s foreground from the background, which have been shown to have good performance on image generation. The main idea behind generative adversarial networks is to train two networks: a generator network G tries to produce a video, and a discriminator network D tries to distinguish between “real“ videos and “fake” generated videos.
 
 
-### Self-supervised Spatiotemporal Feature Learning by Video Geometric Transformations
+(Video geneartor network: The input to the generator network is a low-dimensional latent code, which is usually sampled from Gaussian. There are two independent streams: a moving foreground pathway of fractionally-strided spatio-temporal convolutions, and a static background pathway of fractionally-strided spatial convolutions, both of which up-sample. These two pathways are combined to create the generated video using a mask from the motion pathway.)
 
+<img width="600" alt="Screenshot 2020-07-06 at 4 01 51 PM" src="https://user-images.githubusercontent.com/57115537/86608131-0d7b1a00-bfa2-11ea-9967-a7aaf9882525.png">
 
+Action classification is used for test the effectiveness. Pre-train the two-stream model with unlabeled videos and then fine-tune the discriminator on the task of interest (e.g., action recognition) using a relatively small set of labeled video. To do action classificationm just replace the last layer (which is a binary classifier) with a K-way softmax classifier and freeze the remaining layers. 
 
-## Self-supervised learning works in biomedical image analysis:
-Moving from natural image, what we want to look at is biomedical image, and here is some applications on this area.
 
 ### Self-supervised Feature Learning for 3D Medical Images by Playing a Rubik’s Cube
 
+A novel proxy task, i.e., Rubik’s cube recovery, is formulated to pre-train 3D neural networks. The proxy task involves two operations, i.e., cube rearrangement and cube rotation, which enforce networks to learn translational and rotational invariant features from raw 3D data. 
+
+Rubik’s cube recovery: first partition it into a grid (e.g., 2×2×2) of cubes, and then permute the cubes with random rotations. Like playing a Rubik’s cube, the proxy task aims to recover the original configuration, i.e., cubes are ordered and orientated. This is similar to Jigsaw in 2D, but here cube rotation poeration is added to encourages deep learning networks to leverage more spatial information
+
+<img width="600" alt="Screenshot 2020-07-06 at 4 10 08 PM" src="https://user-images.githubusercontent.com/57115537/86611151-284f8d80-bfa6-11ea-9170-ac66f5d3c4ab.png">
+
+Adapting Pre-trained Weights for Pixel-wise Target Task: 
+1. Classification: For the classification task, the pre-trained CNN can be directly used for finetuning
+2. Segmentation: For the segmentation task, the pre-trained weights can only be adapted to the encoder part of the fully convolutional network (FCN), e.g. U-Net. The decoder of FCN still needs random initialization, which may wreck the pre-trained feature representation and neutralize the improvement generated by the pre-training.
+
+### Unsupervised Learning of Video Representations using LSTMs
 
 
-### Ultrasound Image Representation Learning by Modeling Sonographer Visual Attention
+
 
 
 
