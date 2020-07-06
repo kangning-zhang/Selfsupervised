@@ -12,7 +12,7 @@ The core of the self-supervised method lies a framing called "pretext task" that
 ### Common Setup (Pre-training, Feature Extraction and Transfer):
 
 1. Firstly, perform self-supervised pre-training using a self-supervised pretext method on a pre-training dataset
-2. Secondly, extract features from various layers of the network. Say for AlexNet, we do this after every conv layer
+2. Secondly, extract features from various layers of the network. Say for AlexNet, we could do this after every conv layer
 3. Finally, evaluate quality of these features (from different self-supervised approaches) by transfer learning
 
 
@@ -32,22 +32,28 @@ Evaluation including: Predict the bounding boxes of all objects of a given class
 ### Jigsaw puzzle
 The model is trained to place 9 shuffled patches back to the original locations. A convolutional network processes each patch independently with shared weights and outputs a probability vector per patch index out of a predefined set of permutations. To control the difficulty of jigsaw puzzles, the paper proposed to shuffle patches according to a predefined permutation set and configured the model to predict a probability vector over all the indices in the set.
 
+The figure below illustrates how a puzzle is generated and solved. 
+1. randomly crop a 225 × 225 pixel window from an image (red dashed box), divide it into a 3 × 3 grid, and randomly pick a 64 × 64 pixel tiles from each 75 × 75 pixel cell. 
+2. These 9 tiles are reordered via a randomly chosen permutation from a predefined permutation set and are then fed to the Context Free Network (CFN). The task is to predict the index of the chosen permutation (technically, defines as output a probability vector with 1 at the 64-th location and 0 elsewhere). The CFN is a siamese-ennead CNN. For simplicity, we do not indicate the maxpooling and ReLU layers. These shared layers are implemented exactly as in AlexNet. 
+3. In the transfer learning experiments we show results with the trained weights transferred on AlexNet (precisely, stride 4 on the first layer). The training in the transfer learning experiment is the same as in the other competing methods. Notice instead, that during the training on the puzzle task, we set the stride of the first layer of the CFN to 2 instead of 4.
+
+
+<img width="800" alt="Screenshot 2020-07-06 at 1 54 02 PM" src="https://user-images.githubusercontent.com/57115537/86595171-3beff980-bf90-11ea-81e5-4a251475c1fb.png">
+
+
+### Exemplar networks
+Perturb/distort image patches, e.g. by cropping and affine transformations and train to classify these exemplars as same class. In this case, every individual image corresponds to its own class, multiple examples are aumentated and triplet loss is used in order to scale this pretext task to a large number of images and classes. Triplet loss is choicen here to encourage examples of the same image to have representations that are close in Euclidean space.
+
+<img width="400" alt="Screenshot 2020-07-06 at 10 33 23 AM" src="https://user-images.githubusercontent.com/57115537/86578752-371d4c80-bf74-11ea-8d17-fdd4507bab15.png">
+
+
+### Rotation - with applications to video
 
 
 ### Colourization (could not be transferred to medical image)
 Train network to predict pixel colour from a monochrome input
 
-<img width="600" alt="Screenshot 2020-07-06 at 10 33 15 AM" src="https://user-images.githubusercontent.com/57115537/86578729-2ff63e80-bf74-11ea-8d38-83b1e6072a72.png">
-
-
-### Exemplar networks
-Perturb/distort image patches, e.g. by cropping and affine transformations and train to classify these exemplars as same class
-
-<img width="600" alt="Screenshot 2020-07-06 at 10 33 23 AM" src="https://user-images.githubusercontent.com/57115537/86578752-371d4c80-bf74-11ea-8d17-fdd4507bab15.png">
-
-
-### Rotation - with applications to video
-
+<img width="500" alt="Screenshot 2020-07-06 at 10 33 15 AM" src="https://user-images.githubusercontent.com/57115537/86578729-2ff63e80-bf74-11ea-8d38-83b1e6072a72.png">
 
 
 ## Video-Based
